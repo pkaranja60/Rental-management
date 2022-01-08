@@ -1,0 +1,102 @@
+from rental import app, db
+from flask import render_template, redirect, url_for, flash, session, request, make_response
+from flask_login import login_user, logout_user, login_required, current_user
+from rental.forms import RegistrationForm, LoginForm, TenantsForm
+from rental.models import User, Tenant
+import pdfkit
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        attempted_user = User.query.filter_by(
+            username=form.username.data).first()
+        if attempted_user and attempted_user.check_password_correction(
+                attempted_password=form.password.data
+        ):
+            login_user(attempted_user)
+            session['logged_in'] = True
+            return redirect(url_for('index'))
+        return render_template('accounts/login.html', msg='Username or Password is incorrect ! Please try again', form=form)
+
+    if not current_user.is_authenticated:
+        return render_template('accounts/login.html', form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user_create = User(username=form.username.data,
+                           email=form.email.data,
+                           password=form.password.data)
+        db.session.add(user_create)
+        db.session.commit()
+
+        return redirect(url_for('login'),
+                        )
+    else:
+        return render_template('accounts/register.html',
+                               msg='username/ email exist. Choose another',
+                               form=form)
+
+
+@app.route('/tenants', methods=['GET', 'POST'])
+def tenants():
+    tenant = Tenant.query.all()
+    return render_template('table.html', user=tenant)
+
+
+@app.route('/new', methods=['GET', 'POST'])
+def new():
+    form = TenantsForm()
+    if form.validate_on_submit():
+        user_to_create = Tenant(name=form.name.data,
+                                phone_no=form.phone_no.data,
+                                house_no=form.house_no.data,
+                                rent=form.rent.data)
+        db.session.add(user_to_create)
+        db.session.commit()
+        return redirect(url_for('tenants'))
+    else:
+        return render_template('tenant.html', form=form)
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    return render_template('profile.html')
+
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    user_delete = Tenant.query.get_or_404(int(id))
+    db.session.delete(user_delete)
+    db.session.commit()
+    return redirect(url_for('tenants'))
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash(f'logged out succesfully', category='info')
+    return redirect(url_for('index'))
+
+
+@app.route('/pdf/<tenant>', methods=['POST'])
+def get_pdf(tenant):
+    if request.method == 'POST':
+        tenant = Tenant.query.all()
+    rendered = render_template(
+        'pdf.html', user=tenant, tenant=tenant)
+    pdf = pdfkit.form_string(rendered, False)
+    response = make_response(pdf)
+    response.headers['content=Type'] = 'application/pdf'
+    response.headers['content=Disposition'] = 'inline: filename=' + \
+        rent_statement+'.pdf'
+    return response

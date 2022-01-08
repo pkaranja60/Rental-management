@@ -1,0 +1,74 @@
+{% extends "layouts/base-pdf.html" %}
+
+{% block title %} Tables {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0">Plot</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{url_for('index')}}">Home</a></li>
+                    <li class="breadcrumb-item active">Tenants</li>
+                </ol>
+            </div>
+           
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <div class="row">
+            <!-- column -->
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-block">
+                       
+                        <div class="table-responsive">
+                            <table id="data" class="table table-stripped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Phone N/o#</th>
+                                        <th>House N/o#</th>
+                                        <th>Payment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in user %}
+                                    <tr>
+                                        <td scope='row'>{{user.id}}</td>
+                                        <td>{{user.name}}</td>
+                                        <td>{{user.phone_no}}</td>
+                                        <td>{{user.house_no}}</td>
+                                        <td>Ksh {{user.rent}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- ============================================================== -->
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}
