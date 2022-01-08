@@ -7,6 +7,7 @@ import pdfkit
 
 
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
@@ -41,27 +42,32 @@ def register():
 
         return redirect(url_for('login'),
                         )
-    else:
-        return render_template('accounts/register.html',
-                               msg='username/ email exist. Choose another',
-                               form=form)
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(
+                f'{err_msg}', category='danger')
+    return render_template('accounts/register.html',
+                           msg='Please create an account',
+                           form=form)
 
 
 @app.route('/tenants', methods=['GET', 'POST'])
+@login_required
 def tenants():
     tenant = Tenant.query.all()
     return render_template('table.html', user=tenant)
 
 
 @app.route('/new', methods=['GET', 'POST'])
+@login_required
 def new():
     form = TenantsForm()
     if form.validate_on_submit():
-        user_to_create = Tenant(name=form.name.data,
-                                phone_no=form.phone_no.data,
-                                house_no=form.house_no.data,
-                                rent=form.rent.data)
-        db.session.add(user_to_create)
+        user_create = Tenant(name=form.name.data,
+                             phone_no=form.phone_no.data,
+                             house_no=form.house_no.data,
+                             rent=form.rent.data)
+        db.session.add(user_create)
         db.session.commit()
         return redirect(url_for('tenants'))
     else:
@@ -69,6 +75,7 @@ def new():
 
 
 @app.route('/settings', methods=['GET', 'POST'])
+@login_required
 def settings():
     return render_template('profile.html')
 
