@@ -35,7 +35,20 @@ class Tenant(db.Model):
     name = db.Column(db.String(length=50), nullable=False)
     phone_no = db.Column(db.String(length=50), nullable=False, unique=True)
     house_no = db.Column(db.String(length=50), nullable=False, unique=True)
-    rent = db.Column(db.Integer(), nullable=False)
+
+    rent = db.relationship('Rent', backref='house', lazy=True)
 
     def __repr__(self):
         return f'Tenant{self.id}'
+
+
+class Rent(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    message = db.Column(db.Text(length=256))
+    rent = db.Column(db.Integer(), nullable=False, unique=True)
+    date = db.Column(db.Date)
+
+    house_no = db.Column(db.String, db.ForeignKey('tenant.house_no'), nullable=False)
+
+    def __repr__(self):
+        return f'Rent{self.id}'

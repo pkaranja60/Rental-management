@@ -1,15 +1,24 @@
 from rental import app, db
 from flask import render_template, redirect, url_for, flash, session, request, make_response
 from flask_login import login_user, logout_user, login_required, current_user
-from rental.forms import RegistrationForm, LoginForm, TenantsForm
-from rental.models import User, Tenant
+from rental.forms import RegistrationForm, LoginForm, TenantsForm, RentForm
+from rental.models import User, Tenant, Rent
 import pdfkit
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    return render_template('index.html')
+    form = RentForm()
+    if form.validate_on_submit():
+        user_to_input = Rent(house_no=form.house_no.data,
+                             phone_no=form.phone_no.data,
+                             rent=form.rent.data,
+                             message=form.message.data,
+                             date=form.date.data,)
+        db.session.add(user_to_input)
+        db.session.commit()
+    return render_template('index.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -66,7 +75,7 @@ def new():
         user_create = Tenant(name=form.name.data,
                              phone_no=form.phone_no.data,
                              house_no=form.house_no.data,
-                             rent=form.rent.data)
+                             )
         db.session.add(user_create)
         db.session.commit()
         return redirect(url_for('tenants'))

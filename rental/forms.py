@@ -1,7 +1,8 @@
 from rental.models import User
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import Length, Email, DataRequired, ValidationError
+from wtforms.fields import DateField
 
 
 class RegistrationForm(FlaskForm):
@@ -29,6 +30,13 @@ class LoginForm(FlaskForm):
 class TenantsForm(FlaskForm):
     name = StringField(label='Name', validators=[Length(min=2), DataRequired()])
     phone_no = StringField(label='Phone No', validators=[Length(min=10, max=10), DataRequired()])
-    house_no = StringField(label='House No', validators=[Email(), DataRequired()])
-    rent = StringField(label='Rent', validators=[DataRequired()])   
+    house_no = StringField(label='House No', validators=[DataRequired()]) 
     submit = SubmitField(label='Add')
+
+
+class RentForm(FlaskForm):
+    house_no =   StringField(label='House No', validators=[DataRequired()])
+    phone_no = StringField(label='Phone No', validators=[Length(min=10, max=10), DataRequired()])
+    message = TextAreaField(label='Message')
+    rent =  StringField(label='Rent', validators=[DataRequired()])
+    date = DateField(label='Date', format='%d-%m-%Y', validators=[DataRequired()])
