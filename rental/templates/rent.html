@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Tables {% endblock %} 
+
+<!-- Plugins CSS goes HERE  -->
+{% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-8 align-self-center">
+                <h3 class="text-themecolor m-b-0 m-t-0" style='font-size:25px; font-weight: 700;'>Rent</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item "><a href="{{url_for('tenants')}}">Tenant</a></li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <div class="row">
+            <!-- column -->
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-block">
+                       
+                        <div class="table-responsive">
+                            <table id="data" class="table table-stripped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>House N/o#</th>
+                                        <th>Message</th>
+                                        <th>Amount</th>
+                                        <th>Date Of Payment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rent in rent %}
+                                   
+                                    <tr>
+                                        <td scope='row'>{{rent.id}}</td>
+                                        <td>{{rent.house_no}}</td>
+                                        <td>{{rent.message}}</td>
+                                        <td>Ksh {{rent.rent}}</td>
+                                        <td>{{rent.date}}</td>  
+                                        <td>
+                                            <a href="{{ url_for('delete', id = rent.id)}}" >
+                                           <span></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- ============================================================== -->
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

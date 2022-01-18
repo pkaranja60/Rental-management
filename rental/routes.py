@@ -11,14 +11,16 @@ import pdfkit
 def index():
     form = RentForm()
     if form.validate_on_submit():
-        user_to_input = Rent(house_no=form.house_no.data,
-                             phone_no=form.phone_no.data,
-                             rent=form.rent.data,
-                             message=form.message.data,
-                             date=form.date.data,)
-        db.session.add(user_to_input)
+        user_create = Rent(house_no=form.house_no.data,
+                           rent=form.rent.data,
+                           message=form.message.data,
+                           date=form.date.data,
+                           )
+        db.session.add(user_create)
         db.session.commit()
-    return render_template('index.html', form=form)
+        return redirect(url_for('rent'))
+    else:
+         return render_template('index.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -64,7 +66,7 @@ def register():
 @login_required
 def tenants():
     tenant = Tenant.query.all()
-    return render_template('table.html', user=tenant)
+    return render_template('table.html', tenant=tenant)
 
 
 @app.route('/new', methods=['GET', 'POST'])
@@ -83,6 +85,13 @@ def new():
         return render_template('tenant.html', form=form)
 
 
+@app.route('/rent_paid', methods=['GET', 'POST'])
+@login_required
+def rent():
+    rent = Rent.query.all()
+    return render_template('rent.html', rent=rent)
+
+
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
@@ -95,6 +104,19 @@ def delete(id):
     db.session.delete(user_delete)
     db.session.commit()
     return redirect(url_for('tenants'))
+
+
+@app.route('/update/<int:id>', methods=['PUT', 'POST'])
+def update(id):
+    user_to_update = Tenant.query.get_or_404(int(id))
+    form = TenantsForm()
+    if form.validate_on_submit():
+        user_to_update = Tenant(name=form.name.data,
+                                phone_no=form.phone_no.data)
+        db.session.commit()
+        return redirect(url_for('tenants'))
+    else:
+        return render_template('table.html', user_to_update=user_to_update)
 
 
 @app.route('/logout')
@@ -116,3 +138,6 @@ def get_pdf(tenant):
     response.headers['content=Disposition'] = 'inline: filename=' + \
         rent_statement+'.pdf'
     return response
+
+
+

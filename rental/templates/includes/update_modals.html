@@ -1,0 +1,41 @@
+<!-- Employee Modal -->
+<div class="modal fade" id="Modal-Details-{{ tenant.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">
+             {{ tenant.name }} {{ tenant.phone_no }}
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class="form-horizontal form-material">
+                            
+            {{ form.hidden_tag() }} 
+        
+            <div class="form-group">
+                <label class="col-md-12">Name</label>
+                <div class="col-md-12">
+                    {{ form.name(class="form-control form-control-line") }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-12">Phone N/o#</label>
+                <div class="col-md-12">
+                    {{ form.phone_no(class="form-control form-control-line") }}
+                </div>
+            </div>
+
+        </form>
+        </div>
+        <div class="modal-footer">
+          <a href="{{ url_for('update', id=tenant.id) }}" class="btn btn-outline-info btn-sm">
+                Update Records
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
