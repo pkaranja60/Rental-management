@@ -37,6 +37,6 @@ class TenantsForm(FlaskForm):
 class RentForm(FlaskForm):
     house_no = StringField(label='House No', validators=[DataRequired()])
     message = TextAreaField(label='Message')
-    rent =  StringField(label='Rent', validators=[DataRequired()])
+    payment =  StringField(label='Rent', validators=[DataRequired()])
     date = DateField(label='Date', format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField(label='Rent Paid')

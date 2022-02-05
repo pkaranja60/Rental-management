@@ -60,16 +60,14 @@
                                     <td>{{tenant.phone_no}}</td>
                                     <td>{{tenant.house_no}}</td>
 
-                                    <td>Ksh {{tenant.rent}}</td>
                                     <td>
-
-                                        <a href="#" data-toggle='modal' data-target='#Modal-Details-{{ tenant.id }}'
+                                        <a href="{{ url_for('update', id= tenant.id) }}" 
                                             class="btn waves-effect waves-light btn-info pull-right hidden-sm-down">
                                             Update Info
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('delete', id = tenant.id)}}">
+                                        <a href="{{ url_for('delete', id = tenant.id) }}">
 
                                             <box-icon name='trash' color='#ef0707' animation='tada-hover'></box-icon>
 
@@ -80,7 +78,7 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <form action='{{url_for('get_pdf', tenant=tenant.id)}}' method='POST'>
+                        <form action='{{url_for('get_pdf')}}' method='POST'>
                             <button type='submit' class='btn btn-info'>Print Statement</button>
                         </form>
                     </div>

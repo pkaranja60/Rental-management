@@ -3,7 +3,9 @@ from flask import render_template, redirect, url_for, flash, session, request, m
 from flask_login import login_user, logout_user, login_required, current_user
 from rental.forms import RegistrationForm, LoginForm, TenantsForm, RentForm
 from rental.models import User, Tenant, Rent
+import os
 import pdfkit
+os.environ['PATH'] += r"C:\Users\Peter\Downloads\Programs"
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -12,7 +14,7 @@ def index():
     form = RentForm()
     if form.validate_on_submit():
         user_create = Rent(house_no=form.house_no.data,
-                           rent=form.rent.data,
+                           payment=form.payment.data,
                            message=form.message.data,
                            date=form.date.data,
                            )
@@ -20,7 +22,7 @@ def index():
         db.session.commit()
         return redirect(url_for('rent'))
     else:
-         return render_template('index.html', form=form)
+        return render_template('index.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -58,7 +60,6 @@ def register():
             flash(
                 f'{err_msg}', category='danger')
     return render_template('accounts/register.html',
-                           msg='Please create an account',
                            form=form)
 
 
@@ -85,6 +86,23 @@ def new():
         return render_template('tenant.html', form=form)
 
 
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    form = TenantsForm()
+    tenant_to_update = Tenant.query.get_or_404(int(id))
+    if request.method == 'POST':
+        tenant_to_update.name = request.form['name']
+        tenant_to_update.phone_no = request.form['phone_no']
+        try:
+            db.session.commit()
+            return redirect(url_for('tenants'))
+        except:
+            flash(f'Error! Looks likes there is a problem')
+            return render_template('update.html', tenant_to_update=tenant_to_update, form=form)
+    else:
+        return render_template('update.html', tenant_to_update=tenant_to_update, form=form)
+
+
 @app.route('/rent_paid', methods=['GET', 'POST'])
 @login_required
 def rent():
@@ -106,38 +124,22 @@ def delete(id):
     return redirect(url_for('tenants'))
 
 
-@app.route('/update/<int:id>', methods=['PUT', 'POST'])
-def update(id):
-    user_to_update = Tenant.query.get_or_404(int(id))
-    form = TenantsForm()
-    if form.validate_on_submit():
-        user_to_update = Tenant(name=form.name.data,
-                                phone_no=form.phone_no.data)
-        db.session.commit()
-        return redirect(url_for('tenants'))
-    else:
-        return render_template('table.html', user_to_update=user_to_update)
-
-
 @app.route('/logout')
 def logout():
     logout_user()
     flash(f'logged out succesfully', category='info')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
-@app.route('/pdf/<tenant>', methods=['POST'])
-def get_pdf(tenant):
+@app.route('/pdf', methods=['GET', 'POST'])
+def get_pdf():
     if request.method == 'POST':
-        tenant = Tenant.query.all()
+        user = Tenant.query.all()
     rendered = render_template(
-        'pdf.html', user=tenant, tenant=tenant)
-    pdf = pdfkit.form_string(rendered, False)
+        'pdf.html', user=user)
+    pdf = pdfkit.from_string(rendered, False)
     response = make_response(pdf)
     response.headers['content=Type'] = 'application/pdf'
     response.headers['content=Disposition'] = 'inline: filename=' + \
         rent_statement+'.pdf'
     return response
-
-
-

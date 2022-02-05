@@ -5,7 +5,7 @@ from flask_login import UserMixin
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return User.query.filter_by(id=user_id).first()
 
 
 class User(db.Model, UserMixin):
@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
 
     @property
     def password(self):
-        return self.password    
+        return self.password
 
     @password.setter
     def password(self, plain_text_password):
@@ -29,26 +29,28 @@ class User(db.Model, UserMixin):
     def check_password_correction(self, attempted_password):
         return flask_bcrypt.check_password_hash(self.password_hash, attempted_password)
 
+# parent
+
 
 class Tenant(db.Model):
-    id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    id = db.Column(db.Integer(), primary_key=True,
+                   nullable=False, autoincrement=True, unique=True)
     name = db.Column(db.String(length=50), nullable=False)
     phone_no = db.Column(db.String(length=50), nullable=False, unique=True)
     house_no = db.Column(db.String(length=50), nullable=False, unique=True)
 
-    rent = db.relationship('Rent', backref='tenant', lazy=True)
-
     def __repr__(self):
         return f'Tenant{self.id}'
+
+# child
 
 
 class Rent(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False, unique=True)
+    house_no = db.Column(db.String(length=50), nullable=False)
     message = db.Column(db.Text(length=256))
-    rent = db.Column(db.Integer(), nullable=False)
+    payment = db.Column(db.Integer(), nullable=False)
     date = db.Column(db.Date, nullable=False)
-
-    house_no = db.Column(db.String, db.ForeignKey('tenant.house_no'), nullable=False)
 
     def __repr__(self):
         return f'Rent{self.id}'
